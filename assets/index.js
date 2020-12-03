@@ -63,26 +63,14 @@ function startGame() {
     let gameBox = document.querySelector("#game-box")
 
     startTimer()
-    
+
+    makeTargetDivs()
     
 
 }
 
 function startTimer() {
-    // let timer = document.getElementById("timer")
-
-    // let timerID = setInterval(countdown, 1000);
-    // let timeLeft = 30
-    
-    // function countdown() {
-    //     if (timeLeft == -1) {
-    //         clearTimeout(timerId);
-    //         // endGame() ???? not sure how this will work yet
-    //     } else {
-    //         timer.innerHTML = timeLeft;
-    //         timeLeft --;
-    //     }
-    // }
+   
     let timeElm = document.getElementById('timer');
     let timer = function(x) {
         if(x === -1) {
@@ -95,6 +83,45 @@ function startTimer() {
     return setTimeout(() => {timer(--x)}, 1000)
     }
 
-    timer(30);
+    timer(30)
+}
 
+function makeTargetDivs() {
+
+    let targetInterval = setInterval(makeSingleTarget, 1000)
+    let timer = document.getElementById('timer')
+
+    let timeoutID = window.setTimeout(function() {clearInterval(targetInterval)}, 30000)
+
+}
+
+function makeSingleTarget() {
+    let timer = document.getElementById('timer')
+    // console.log("counting to five!")
+    let gameBox = document.getElementById("game-box")
+    
+    let div = document.createElement("div")
+    div.className = "target"
+
+    pagePosition(div)
+
+    // let targetImg = document.createElement("img")
+    // targetImg.src = "assets/images/black-circle-target.jpg"
+    // targetImg.id = "target-image"
+    // targetImg.alt = "there should be a target here"
+
+    //get image working
+
+    // div.appendChild()
+    gameBox.appendChild(div)
+
+    
+
+    
+    // debugger 
+}
+
+function pagePosition(element) {
+    element.style.top = `${Math.random()*80}%`;
+    element.style.left = `${Math.random()*80}%`;
 }
