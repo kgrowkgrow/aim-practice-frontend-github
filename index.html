@@ -7,20 +7,17 @@
     <script defer src='assets/index.js'></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
-    
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css"> -->
     <link rel="stylesheet" href="assets/styles.css">
   </head>
   <body>
       
-      <section class="hero is-fullheight">
+      <section class="hero is-fullheight is-light">
           <div class="hero-head">
-              <div class="container has-text-centered">
-                <div class="title is-large" id="welcome"><h1>Welcome to Aim Practice!</h1>
-                    
-                </div>
+            <div class="container has-text-centered">
+                <div class="title is-large" id="welcome"><h1>Welcome to Aim Practice!</h1></div>
+            </div>
           </div>
-          <div class="hero-body">
+        <div class="hero-body">
             <div class="container has-text-centered">
                 <form id=login-form>
                     <div id="login">
@@ -30,27 +27,26 @@
                     </div>
                 </form>
             </div>
-          </div>
-          <div class="hero-foot">
-              <div class="container has-text-centered">
-                  <div id=timer>
-                      <div id='button-container'>
-                          <button class="button is-medium is-focused is-rounded is-success has-text-weight-bold">Start Game!</button>
-                      </div>
-                  </div>
-                  
-              </div>
-          </div>
         </div>
+            <div hidden id='game-box'>  
+                <div id=timer>
+                </div>
+                <div id= score-box>
+                    Score: <p id=score-num>0</p>
+                </div>
+                <div id='button-container'>
+                    <button id=new-game-button class="button is-medium is-focused is-rounded is-success has-text-weight-bold">Start Game!</button>
+                    
+
+                </div>
+            </div>
+         
       </section>
 
-
     
     
     
-    <div id='game-box'>
-    </div>
-</body>
+  </body>
 </html>
 
 <!-- section > hero > container -->

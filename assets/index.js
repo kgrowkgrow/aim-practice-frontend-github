@@ -1,6 +1,6 @@
 const BASEURL = "http://localhost:3000/"
+let currentUser
 
-// let username 
 
 document.addEventListener("DOMContentLoaded", event => {
     
@@ -13,17 +13,14 @@ document.addEventListener("DOMContentLoaded", event => {
         fetch(BASEURL + "users", configPostObj(name))
         .then(resp => resp.json())
         .then(json => {
-            let username = json.name  
-            renderMainPage(username) // I may also need to keep the user id here so that a new game can grab it
+            // let username = json.name  
+            currentUser = json
+            
+            renderMainPage(currentUser.name) // I may also need to keep the user id here so that a new game can grab it
         })     
     })
 })
 
-function renderLogin() {
-    const welcome = document.querySelector("#login")
-    // const div = document.querySelector("#game-box")
-    // div.style.display = "block"
-}
 
 function configPostObj(name) {
     return {
@@ -50,21 +47,35 @@ function renderMainPage(username) {
 
     gameBox.addEventListener("click", event => {
         if (event.target.tagName != "BUTTON") {return}
+        event.target.style.display = "none"
         startGame()
     })
 }
 
 function hideForm() {
+    
     let form = document.querySelector("#login-form")
     form.style.display = "none"
 }
 
 function startGame() {
     let gameBox = document.querySelector("#game-box")
+    let score = document.querySelector("#score-num")
+    score.textContent = "0"
 
     startTimer()
 
     makeTargetDivs()
+
+    let playAgainTimeout = window.setTimeout(function() {
+        let button = document.querySelector("#new-game-button")
+        button.innerText = "Play Again"
+        button.style.display = "block"
+
+        postScore(parseInt(score.textContent))
+        
+        //accept number of seconds as an input and base all the times off of that. or maybe give an option
+    }, 33000)
     
 
 }
@@ -88,40 +99,91 @@ function startTimer() {
 
 function makeTargetDivs() {
 
-    let targetInterval = setInterval(makeSingleTarget, 1000)
-    let timer = document.getElementById('timer')
+    let gameBox = document.getElementById("game-box")
 
+    let targetID = 1
+
+    let targetInterval = setInterval(makeSingleTarget, 1000)
+    
     let timeoutID = window.setTimeout(function() {clearInterval(targetInterval)}, 30000)
+
+    gameBox.addEventListener("click", dealWithClick)
 
 }
 
 function makeSingleTarget() {
     let timer = document.getElementById('timer')
-    // console.log("counting to five!")
+    
     let gameBox = document.getElementById("game-box")
     
     let div = document.createElement("div")
     div.className = "target"
 
+    let timeoutID = window.setTimeout(function() {div.parentNode.removeChild(div)}, 3000)
+    
     pagePosition(div)
 
-    // let targetImg = document.createElement("img")
-    // targetImg.src = "assets/images/black-circle-target.jpg"
-    // targetImg.id = "target-image"
-    // targetImg.alt = "there should be a target here"
-
-    //get image working
-
-    // div.appendChild()
     gameBox.appendChild(div)
 
     
 
     
-    // debugger 
+
+    
+
 }
 
 function pagePosition(element) {
     element.style.top = `${Math.random()*80}%`;
     element.style.left = `${Math.random()*80}%`;
+}
+
+function dealWithClick(event) {
+    let gameBox = document.getElementById("game-box") 
+        
+        if (event.target.className != "target") {
+            console.log("you missed!")
+            addToScore(-10)      
+            
+        } else {
+            console.log("direct hit!")
+            //score goes up and target disappears
+            // event.target.parentNode.removeChild(event.target)
+            event.target.style.display = "none"
+            addToScore(50)
+        }     
+}
+
+function addToScore(num) {
+    let currentScore = document.querySelector("#score-num")
+    if (currentScore.textContent != "0") {
+        
+        let scoreInt = parseInt(currentScore.textContent) 
+        scoreInt += num
+        currentScore.textContent = scoreInt
+      
+    } else { 
+        currentScore.textContent = `${num}`
+    }   
+}
+
+function postScore(score) {
+    fetch(BASEURL + "games", configScoreObj(score))
+}
+
+function configScoreObj(score) {
+    // make and return obj
+    return {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify({
+            score: score,
+            user_id: currentUser.id,
+            scoreboard_id: 1
+            // before this works, I need to: catch the current user (maybe do a const at the top?), 
+        })
+    }  
 }
