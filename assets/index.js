@@ -4,7 +4,6 @@ let currentUser
 
 document.addEventListener("DOMContentLoaded", event => {
     
-    // debugger
     form = document.querySelector("#login-form")
     form.addEventListener("submit", event => {
         event.preventDefault()
@@ -13,10 +12,9 @@ document.addEventListener("DOMContentLoaded", event => {
         fetch(BASEURL + "users", configPostObj(name))
         .then(resp => resp.json())
         .then(json => {
-            // let username = json.name  
             currentUser = json
             
-            renderMainPage(currentUser.name) // I may also need to keep the user id here so that a new game can grab it
+            renderMainPage(currentUser.name) 
         })     
     })
 })
@@ -105,7 +103,7 @@ function makeTargetDivs() {
 
     let targetInterval = setInterval(makeSingleTarget, 1000)
     
-    let timeoutID = window.setTimeout(function() {clearInterval(targetInterval)}, 30000)
+    let timeoutID = window.setTimeout(function() {clearInterval(targetInterval)}, 30000) 
 
     gameBox.addEventListener("click", dealWithClick)
 
@@ -142,13 +140,12 @@ function dealWithClick(event) {
     let gameBox = document.getElementById("game-box") 
         
         if (event.target.className != "target") {
+            if (event.target.tagName != "BUTTON") {
             console.log("you missed!")
-            addToScore(-10)      
-            
+            addToScore(-10) 
+            }     
         } else {
             console.log("direct hit!")
-            //score goes up and target disappears
-            // event.target.parentNode.removeChild(event.target)
             event.target.style.display = "none"
             addToScore(50)
         }     
@@ -169,10 +166,15 @@ function addToScore(num) {
 
 function postScore(score) {
     fetch(BASEURL + "games", configScoreObj(score))
+    .then(resp => resp.json())
+    .then(json => {
+        console.log(json)
+    })
 }
 
 function configScoreObj(score) {
     // make and return obj
+    // debugger
     return {
         method: "POST",
         headers: {
@@ -183,7 +185,7 @@ function configScoreObj(score) {
             score: score,
             user_id: currentUser.id,
             scoreboard_id: 1
-            // before this works, I need to: catch the current user (maybe do a const at the top?), 
+            // before this works, I need to: handle this in games controller, 
         })
     }  
 }
