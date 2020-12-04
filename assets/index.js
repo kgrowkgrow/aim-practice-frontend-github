@@ -35,11 +35,30 @@ function configPostObj(name) {
 
 function renderMainPage(username) {
 
-    hideForm()
+    hideLoginForm()
+
+    showGameBox()
     
     let welcome = document.querySelector("#welcome")
-    welcome.children[0].textContent = `Hi there, ${username}!`
+    welcome.children[0].textContent = `Hi there, ${capitalize(username)}!`
 
+    showScoreboardButton()
+
+    let scoreBoard = document.querySelector("#scoreboard-button")
+    scoreBoard.addEventListener("click", showScoreboard)
+}
+
+function capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function hideLoginForm() {
+    
+    let form = document.querySelector("#login-form")
+    form.style.display = "none"
+}
+
+function showGameBox() {
     let gameBox = document.querySelector("#game-box")
     gameBox.style.display = "block"
 
@@ -48,12 +67,14 @@ function renderMainPage(username) {
         event.target.style.display = "none"
         startGame()
     })
+
+
 }
 
-function hideForm() {
-    
-    let form = document.querySelector("#login-form")
-    form.style.display = "none"
+function showScoreboardButton() {
+
+    let heroFoot = document.querySelector("#hero-foot")
+    heroFoot.style.display = "block"
 }
 
 function startGame() {
@@ -188,4 +209,51 @@ function configScoreObj(score) {
             // before this works, I need to: handle this in games controller, 
         })
     }  
+}
+
+function showScoreboard() {
+    toggleGameBox()
+    toggleScoreboard()
+
+    fetchNewScores()
+
+
+}
+
+function toggleScoreboard() {
+
+    // toggleGameBox()
+
+    let scoreboard = document.querySelector("#high-score-table")
+    if (scoreboard.style.display === "none") {
+        scoreboard.style.display = "block"
+    } else {
+        scoreboard.style.display = "none"
+    }
+
+
+}
+
+function toggleGameBox() {
+    let gameBox = document.querySelector("#game-box")
+    if (gameBox.style.display === "none") {
+        gameBox.style.display = "block"
+    } else {
+        gameBox.style.display = "none"
+    }
+}
+
+function fetchNewScores() {
+    fetch(BASEURL + "games")
+    .then(resp => resp.json())
+    .then(json => {
+        // console.log(json.sort(function (a, b) {
+        //     return a.score - b.score;
+        // }).reverse())
+        let sortedJson = json.sort((a,b) => {
+            return a.score - b.score
+        })
+        debugger
+    })
+    // this needs to fetch and somehow sort.. will need to google some
 }

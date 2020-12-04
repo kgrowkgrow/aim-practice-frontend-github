@@ -14,18 +14,31 @@
       <section class="hero is-fullheight is-light">
           <div class="hero-head">
             <div class="container has-text-centered">
-                <div class="title is-large" id="welcome"><h1>Welcome to Aim Practice!</h1></div>
+                <div class="title is-1" id="welcome"><h1>Welcome to Aim Practice!</h1></div>
             </div>
           </div>
         <div class="hero-body">
             <div class="container has-text-centered">
                 <form id=login-form>
-                    <div id="login">
-                        <label for="uname"><b>Choose a username!</b></label>
-                        <input type="text" placeholder="Enter Username" name="uname" required>
-                        <button type="submit">Leggo!</button>
+                    <div class="control" id="login">
+                        <label class="label" for="uname"><b>Choose a username!</b></label>
+                        <input class="input" type="text" placeholder="Enter Username" name="uname" required>
+                        <button class="button" type="submit">Leggo!</button>
                     </div>
                 </form>
+                <div class="table-container is-centered">
+                    <table id="high-score-table" class="table is-bordered is-striped is-narrow is-hoverable" style="display: none;">
+                        <caption>High Scores</caption>
+                        <tr>
+                          <th class="thead">Month</th>
+                          <th>Savings</th>
+                        </tr>
+                        <!-- <tr>
+                          <td>January</td>
+                          <td>$100</td>
+                        </tr> -->
+                    </table>
+                  </div>
             </div>
         </div>
             <div hidden id='game-box'>  
@@ -36,10 +49,31 @@
                 </div>
                 <div id='button-container'>
                     <button id=new-game-button class="button is-medium is-focused is-rounded is-success has-text-weight-bold">Start Game!</button>
-                    
-
                 </div>
             </div>
+
+            <!-- <div class="table-container is-centered">
+                <table id="high-score-table" class="table is-bordered is-striped is-narrow is-hoverable" style="display: none;">
+                    <caption>High Scores</caption>
+                    <tr>
+                      <th class="thead">Month</th>
+                      <th>Savings</th>
+                    </tr>
+                    <tr>
+                      <td>January</td>
+                      <td>$100</td>
+                    </tr>
+                </table>
+              </div> -->
+
+
+
+            <div hidden id="hero-foot"class="hero-foot">
+                <div class="buttons is-centered">
+                    <button id="scoreboard-button" class="button is-medium is-focused is-rounded is-info">View High Scores</button>
+                </div>
+            </div>
+
          
       </section>
 
