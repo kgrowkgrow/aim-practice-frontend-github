@@ -73,6 +73,8 @@ function showGameBox() {
 
 function showScoreboardButton() {
 
+
+
     let heroFoot = document.querySelector("#hero-foot")
     heroFoot.style.display = "block"
 }
@@ -214,6 +216,7 @@ function configScoreObj(score) {
 function showScoreboard() {
     toggleGameBox()
     toggleScoreboard()
+    clearScoreboard()
 
     fetchNewScores()
 
@@ -247,13 +250,45 @@ function fetchNewScores() {
     fetch(BASEURL + "games")
     .then(resp => resp.json())
     .then(json => {
-        // console.log(json.sort(function (a, b) {
-        //     return a.score - b.score;
-        // }).reverse())
+
         let sortedJson = json.sort((a,b) => {
             return a.score - b.score
-        })
-        debugger
+        }).reverse()
+        
+
+        let slicedJson = sortedJson.slice(0, 20)
+        
+        
+        slicedJson.forEach(game => {
+            console.log(game)
+
+            let tbody = document.getElementById("scoreboard-body")
+
+            let newRow = document.createElement("tr")
+
+            let userCell = document.createElement("td")
+            userCell.textContent = game.user.name
+            
+
+            let scoreCell = document.createElement("td")
+            scoreCell.textContent = game.score
+
+            newRow.append(userCell, scoreCell)
+            tbody.appendChild(newRow)
+
+
+        } )
+        // debugger
     })
     // this needs to fetch and somehow sort.. will need to google some
 }
+
+function clearScoreboard() {
+    let tbody = document.getElementById("scoreboard-body")
+    tbody.innerHTML = ""
+}
+
+
+
+
+
