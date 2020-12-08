@@ -15,11 +15,31 @@ document.addEventListener("DOMContentLoaded", event => {
         .then(resp => resp.json())
         .then(json => {
             currentUser = json
+
+            addScoreboardDeleteEvent()
+            addScoreboardButtonEvent()
+            addEditButtonEvent()
+            addGameEventListener()
             
             renderMainPage() 
         })     
     })
 })
+
+function addScoreboardButtonEvent() {
+    let scoreboardButton = document.querySelector("#scoreboard-button")
+    scoreboardButton.addEventListener("click", event => {
+        let scoreboard = document.getElementById("high-score-table")
+        
+
+        if (scoreboard.style.display === "none") {
+            
+            renderScoreboard()
+        } else {
+            renderMainPage()
+        }
+    })
+}
 
 
 function configPostObj(name) {
@@ -37,53 +57,96 @@ function configPostObj(name) {
 
 function renderMainPage() {
 
-    toggleLoginForm()
+    hideLogin()
+    hideScoreboard()
+    hideClearButton()
     showGameBox()
     showEditUserButton()
+    showWelcome()
     
-    let welcome = document.querySelector("#welcome")
-    welcome.children[0].textContent = `Hi there, ${capitalize(currentUser.name)}!`
+    
+    let welcome = document.querySelector("#welcome > h1")
 
+    welcome.textContent = `Hi there, ${capitalize(currentUser.name)}!`
+    
+    
     showScoreboardButton()
 
-    let scoreBoard = document.querySelector("#scoreboard-button")
-    scoreBoard.addEventListener("click", showScoreboard)
-}
+    // let scoreboardButton = document.querySelector("#scoreboard-button")
+    // scoreboardButton.addEventListener("click", event => {
+    //     let scoreboard = document.getElementById("high-score-table")
+
+    //     if (scoreboard.style.display === "none") {
+            
+    //         renderScoreboard()
+    //     } else {
+    //         renderMainPage()
+    //     }
+//     })
+ }
+
+ function showWelcome() {
+    let welcome = document.querySelector("#welcome")
+    welcome.style.display = "block"
+ }
+
+ function hideWelcome() {
+    let welcome = document.querySelector("#welcome")
+    welcome.style.display = "none"
+ }
+
+ function resetWelcome() {
+     let welcome = document.querySelector("#welcome > h1")
+     welcome.textContent = "Welcome to Aimbot Trainer!"
+ }
+
 
 function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function toggleLoginForm() {
+// function toggleLoginForm() {
     
-    let form = document.querySelector("#login-form")
+//     let form = document.querySelector("#login-form")
  
-    if (form.style.display === "none") {
-        form.style.display = "block"
-    } else {
-        form.style.display = "none" 
-    }
-}
+//     if (form.style.display === "none") {
+//         form.style.display = "block"
+//     } else {
+//         form.style.display = "none" 
+//     }
+// }
 
 function showGameBox() {
+
     let gameBox = document.querySelector("#game-box")
     gameBox.style.display = "block"
+
+}
+
+function addGameEventListener() {
+
+    let gameBox = document.querySelector("#game-box")
 
     gameBox.addEventListener("click", event => {
         if (event.target.tagName != "BUTTON") {return}
         event.target.style.display = "none"
         startGame()
     })
+}
 
-
+function hideGameBox() {
+    let gameBox = document.querySelector("#game-box")
+    gameBox.style.display = "none"
 }
 
 function showScoreboardButton() {
-
-
-
     let heroFoot = document.querySelector("#hero-foot")
     heroFoot.style.display = "block"
+}
+
+function hideScoreboardButton() {
+    let heroFoot = document.querySelector("#hero-foot")
+    heroFoot.style.display = "none"
 }
 
 function startGame() {
@@ -132,7 +195,7 @@ function makeTargetDivs() {
 
     let targetID = 1
 
-    let targetInterval = setInterval(makeSingleTarget, 1000)
+    let targetInterval = setInterval(makeSingleTarget, 500)
     
     let timeoutID = window.setTimeout(function() {clearInterval(targetInterval)}, 30000) 
 
@@ -150,7 +213,7 @@ function makeSingleTarget() {
 
     let timeoutID = window.setTimeout(function() {div.parentNode.removeChild(div)}, 3000)
     
-    pagePosition(div)
+    styleTarget(div)
 
     gameBox.appendChild(div)
 
@@ -162,10 +225,27 @@ function makeSingleTarget() {
 
 }
 
-function pagePosition(element) {
+function styleTarget(element) {
     element.style.top = `${Math.random()*80}%`;
     element.style.left = `${Math.random()*80}%`;
+
+
+    let randomWidthHeight = getRandomIntInclusive(30, 80)
+    element.style.width = `${randomWidthHeight}px`
+    element.style.height = `${randomWidthHeight}px`
+    // debugger
+    
+    
+    
+
+
 }
+
+function getRandomIntInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min); 
+  }
 
 function dealWithClick(event) {
     let gameBox = document.getElementById("game-box") 
@@ -216,15 +296,31 @@ function configScoreObj(score) {
     }  
 }
 
-function showScoreboard() {
-    toggleGameBox()
-    toggleScoreboard()
-    toggleClearButton()
-    // clearScoreboard()
+function renderScoreboard() {
+    // toggleGameBox()
+    hideGameBox()
+    clearScoreboard()
+    showScoreboard()
+    // toggleScoreboard()
+    // showScoreboard()
+    // toggleClearButton()
+    
+
+    showClearButton()
 
     fetchNewScores()
 
 
+}
+
+function showClearButton() {
+    let clearButton = document.getElementById("delete-game-button")
+    clearButton.style.display = "block"
+}
+
+function hideClearButton() {
+    let clearButton = document.getElementById("delete-game-button")
+    clearButton.style.display = "none"
 }
 
 function toggleScoreboard() {
@@ -243,6 +339,24 @@ function toggleScoreboard() {
         
     }
 
+
+}
+
+function showScoreboard() {
+    let scoreboard = document.querySelector("#high-score-table")
+    let button = document.getElementById("scoreboard-button")
+
+    scoreboard.style.display = "block"
+    button.textContent = "Back to Game"
+
+}
+
+function hideScoreboard() {
+    let scoreboard = document.querySelector("#high-score-table")
+    let button = document.getElementById("scoreboard-button")
+
+    scoreboard.style.display = "none"
+    button.textContent = "View High Scores"
 
 }
 
@@ -315,14 +429,19 @@ function clearScoreboard() {
     tbody.innerHTML = ""
 }
 
-function toggleClearButton() {
-    let clearButton = document.getElementById("delete-game-button")
-    if (clearButton.style.display === "none") {
-        clearButton.style.display = "block"
-    } else {
-        clearButton.style.display = "none"
-    }
+// function toggleClearButton() {
+//     let clearButton = document.getElementById("delete-game-button")
+//     if (clearButton.style.display === "none") {
+//         clearButton.style.display = "block"
+//     } else {
+//         clearButton.style.display = "none"
+//     }
 
+//     clearButton.addEventListener("click", dealWithDelete)
+// }
+
+function addScoreboardDeleteEvent() {
+    let clearButton = document.getElementById("delete-game-button")
     clearButton.addEventListener("click", dealWithDelete)
 }
 
@@ -368,15 +487,34 @@ function showEditUserButton() {
     let button = document.getElementById("edit-user-button")
     button.style.display = "block"
 
-    button.addEventListener("click", goToEditPage)
+    button.addEventListener("click", event => {
+
+        //if edit form is hidden, turn it on
+        goToEditPage()
+        //if edif form is showing, turn it off
+
+
+    })
 }
 
 function goToEditPage() {
 
-    toggleGameBox()
-    toggleLoginForm()
-    toggleEditButtons()
-    toggleEnterButton()
+    hideClearButton()
+    hideGameBox()
+    hideScoreboardButton()
+    hideScoreboard()
+    
+    showLogin()
+
+    hideEnterButton()
+    showEditButtons()
+
+
+
+    // toggleGameBox()
+    // toggleLoginForm()
+    // toggleEditButtons()
+    // toggleEnterButton()
 
 }
 
@@ -404,7 +542,6 @@ function toggleEditButtons() {
             fetch(BASEURL + `users/${currentUser.id}`, configEditObject(newName))
             .then(resp => resp.json())
             .then(json => {
-                // debugger
                 currentUser = json
                 renderMainPage()
             })
@@ -425,6 +562,54 @@ function toggleEditButtons() {
     })
 }
 
+function showEditButtons() {
+    let editButtons = document.getElementById("form-edit-buttons")
+
+    let editButton = document.getElementById("username-edit-button")
+
+    let deleteButton = document.getElementById("delete-user-button")
+
+    editButtons.style.display = "block"
+
+    // editButtons.addEventListener("click", event => {
+
+    //     event.preventDefault()
+        
+    //     if (event.target.id === "username-edit-button") {
+    //         let newName = event.target.parentNode.parentNode.children[1].value
+            
+    //         fetch(BASEURL + `users/${currentUser.id}`, configEditObject(newName))
+    //         .then(resp => resp.json())
+    //         .then(json => {
+    //             currentUser = json
+    //             renderMainPage()
+    //         })
+            
+    //     } else if (event.target.id === "delete-user-button") {
+    //         console.log(event.target.id)
+
+    //     fetch(BASEURL + `users/${currentUser.id}`, {method: "DELETE"})
+    //     .then(resp => resp.json())
+    //     .then(json => {
+    //         console.log(json)
+    //         showEnterButton()
+    //         hideEditButtons()
+
+
+    //         // toggleEnterButton()
+    //         // toggleEditButtons()
+    //         resetLoginForm()
+    //     })
+
+    //     } else {return}
+    // })
+}
+
+function hideEditButtons() {
+    let editButtons = document.getElementById("form-edit-buttons")
+    editButtons.style.display = "none"
+}
+
 function toggleEnterButton() {
 
     let button = document.getElementById("login-enter")
@@ -434,6 +619,16 @@ function toggleEnterButton() {
     } else {
         button.style.display = "none" 
     }
+}
+
+function showEnterButton() {
+    let button = document.getElementById("login-enter") 
+    button.style.display = "block"
+}
+
+function hideEnterButton() {
+    let button = document.getElementById("login-enter") 
+    button.style.display = "none"
 }
 
 function configEditObject(name) {
@@ -449,15 +644,55 @@ function configEditObject(name) {
     }
 }
 
-// .reset()
-
 function resetLoginForm() {
     form = document.getElementById("login-form")
     form.reset()
 }
 
+function showLogin() {
+    let form = document.querySelector("#login-form")
+    form.style.display = "block"
+}
 
+function hideLogin() {
+    let form = document.querySelector("#login-form")
+    form.style.display = "none"
+}
 
+function addEditButtonEvent() {
+
+    let editButtons = document.getElementById("form-edit-buttons")
+    let editButton = document.getElementById("username-edit-button")
+    let deleteButton = document.getElementById("delete-user-button")
+
+    editButtons.addEventListener("click", event => {
+
+        event.preventDefault()
+        
+        if (event.target.id === "username-edit-button") {
+            let newName = event.target.parentNode.parentNode.children[1].value
+            
+            fetch(BASEURL + `users/${currentUser.id}`, configEditObject(newName))
+            .then(resp => resp.json())
+            .then(json => {
+                currentUser = json
+                renderMainPage()
+            })
+        } else if (event.target.id === "delete-user-button") {
+            console.log(event.target.id)
+
+        fetch(BASEURL + `users/${currentUser.id}`, {method: "DELETE"})
+        .then(resp => resp.json())
+        .then(json => {
+            console.log(json)
+            showEnterButton()
+            hideEditButtons()
+            resetWelcome()
+            resetLoginForm()
+        })
+    }
+    })
+}
 
 
 
