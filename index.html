@@ -13,37 +13,41 @@
       
       <section class="hero is-fullheight is-light">
           <div class="hero-head">
-            <div class="container has-text-centered">
-                <div class="title is-1" id="welcome"><h1>Welcome to Aim Practice!</h1></div>
+            <div class="container">
+                <div class="title is-1 has-text-centered" id="welcome"><h1>Welcome to Aim Practice!</h1></div>
+                <div id="edit-user-button" class="button  is-small is-primary is-focused" style="display: none;">Edit User</div>
             </div>
           </div>
         <div class="hero-body">
             <div class="container has-text-centered">
-                <form id=login-form>
+                <form id=login-form style="display: block;">
                     <div class="control" id="login">
                         <label class="label" for="uname"><b>Choose a username!</b></label>
                         <input class="input" type="text" placeholder="Enter Username" name="uname" required>
-                        <button class="button" type="submit">Leggo!</button>
+                        <button id="login-enter" class="button" type="submit">Enter</button>
+                        <div id="form-edit-buttons"  style="display: none;">
+                            <button id="username-edit-button" class="button is-success is-light" type="submit">Change Username</button>
+                            <button id="delete-user-button" class="button is-danger is-light is-focused" type="submit">Delete User</button>
+                        </div>
                     </div>
                 </form>
                 <div class="table-container is-centered">
                     <table id="high-score-table" class="table is-bordered is-striped is-narrow is-hoverable" style="display: none;">
                         <thead>
-                            <caption>High Scores</caption>
+                            <caption><b>High Scores</b></caption>
                             <tr>
                             <th class="thead">Username</th>
                             <th>Score</th>
                             </tr>
                         </thead>
-                        <tbody id="scoreboard-body">
-
+                        <tbody id="scoreboard-body">  
                         </tbody>
-                        <!-- <tr>
-                          <td>January</td>
-                          <td>$100</td>
-                        </tr> -->
+                        <div id="delete-game-button" style="display: none;">
+                            <button class="button is-small is-danger is-focused">Clear Scores</button>
+                        </div>
+                        
                     </table>
-                  </div>
+                </div>
             </div>
         </div>
             <div hidden id='game-box'>  
@@ -57,34 +61,12 @@
                 </div>
             </div>
 
-            <!-- <div class="table-container is-centered">
-                <table id="high-score-table" class="table is-bordered is-striped is-narrow is-hoverable" style="display: none;">
-                    <caption>High Scores</caption>
-                    <tr>
-                      <th class="thead">Month</th>
-                      <th>Savings</th>
-                    </tr>
-                    <tr>
-                      <td>January</td>
-                      <td>$100</td>
-                    </tr>
-                </table>
-              </div> -->
-
-
-
             <div hidden id="hero-foot"class="hero-foot">
                 <div class="buttons is-centered">
                     <button id="scoreboard-button" class="button is-medium is-focused is-rounded is-info">View High Scores</button>
                 </div>
             </div>
-
-         
       </section>
-
-    
-    
-    
   </body>
 </html>
 

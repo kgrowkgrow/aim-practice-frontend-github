@@ -1,6 +1,8 @@
 const BASEURL = "http://localhost:3000/"
 let currentUser
 
+let doubleStatus = true
+
 
 document.addEventListener("DOMContentLoaded", event => {
     
@@ -14,7 +16,7 @@ document.addEventListener("DOMContentLoaded", event => {
         .then(json => {
             currentUser = json
             
-            renderMainPage(currentUser.name) 
+            renderMainPage() 
         })     
     })
 })
@@ -33,14 +35,14 @@ function configPostObj(name) {
     }   
 }
 
-function renderMainPage(username) {
+function renderMainPage() {
 
-    hideLoginForm()
-
+    toggleLoginForm()
     showGameBox()
+    showEditUserButton()
     
     let welcome = document.querySelector("#welcome")
-    welcome.children[0].textContent = `Hi there, ${capitalize(username)}!`
+    welcome.children[0].textContent = `Hi there, ${capitalize(currentUser.name)}!`
 
     showScoreboardButton()
 
@@ -52,10 +54,15 @@ function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function hideLoginForm() {
+function toggleLoginForm() {
     
     let form = document.querySelector("#login-form")
-    form.style.display = "none"
+ 
+    if (form.style.display === "none") {
+        form.style.display = "block"
+    } else {
+        form.style.display = "none" 
+    }
 }
 
 function showGameBox() {
@@ -80,6 +87,7 @@ function showScoreboardButton() {
 }
 
 function startGame() {
+    
     let gameBox = document.querySelector("#game-box")
     let score = document.querySelector("#score-num")
     score.textContent = "0"
@@ -190,14 +198,10 @@ function addToScore(num) {
 function postScore(score) {
     fetch(BASEURL + "games", configScoreObj(score))
     .then(resp => resp.json())
-    .then(json => {
-        console.log(json)
-    })
+    .then(json => {})
 }
 
 function configScoreObj(score) {
-    // make and return obj
-    // debugger
     return {
         method: "POST",
         headers: {
@@ -208,7 +212,6 @@ function configScoreObj(score) {
             score: score,
             user_id: currentUser.id,
             scoreboard_id: 1
-            // before this works, I need to: handle this in games controller, 
         })
     }  
 }
@@ -216,7 +219,8 @@ function configScoreObj(score) {
 function showScoreboard() {
     toggleGameBox()
     toggleScoreboard()
-    clearScoreboard()
+    toggleClearButton()
+    // clearScoreboard()
 
     fetchNewScores()
 
@@ -228,10 +232,15 @@ function toggleScoreboard() {
     // toggleGameBox()
 
     let scoreboard = document.querySelector("#high-score-table")
+    let button = document.getElementById("scoreboard-button")
     if (scoreboard.style.display === "none") {
         scoreboard.style.display = "block"
+        button.textContent = "Back to Game"
+        
     } else {
         scoreboard.style.display = "none"
+        button.textContent = "View High Scores"
+        
     }
 
 
@@ -247,6 +256,7 @@ function toggleGameBox() {
 }
 
 function fetchNewScores() {
+    clearScoreboard()
     fetch(BASEURL + "games")
     .then(resp => resp.json())
     .then(json => {
@@ -255,38 +265,199 @@ function fetchNewScores() {
             return a.score - b.score
         }).reverse()
         
-
-        let slicedJson = sortedJson.slice(0, 20)
-        
+        let slicedJson = sortedJson.slice(0, 15)
         
         slicedJson.forEach(game => {
-            console.log(game)
-
-            let tbody = document.getElementById("scoreboard-body")
+            
+            let scoreboardDiv = document.getElementById("scoreboard-body")
 
             let newRow = document.createElement("tr")
+            newRow.dataset.id = game.id
 
             let userCell = document.createElement("td")
             userCell.textContent = game.user.name
-            
 
             let scoreCell = document.createElement("td")
-            scoreCell.textContent = game.score
+            scoreCell.textContent = game.score + " "
 
+            if (game.user.name === currentUser.name) {
+
+                let div = document.createElement("div")
+
+                let doubleButton = document.createElement("button")
+                doubleButton.textContent = "2x"
+                doubleButton.className = "button is-small is-focused is-rounded is-primary"
+                // div.appendChild(doubleButton)
+                scoreCell.appendChild(doubleButton)
+
+                doubleButton.addEventListener("click", event => {
+
+                    if (doubleStatus) {
+                        let num = parseInt(event.target.parentNode.textContent) * 2
+                        
+                        let id = event.target.parentNode.parentNode.dataset.id
+                        
+                        doubleStatus = false
+                        doubleTheScore(id, num)
+                    } else {
+                        alert("You can't do that!")
+                    }
+            })
+        }
             newRow.append(userCell, scoreCell)
-            tbody.appendChild(newRow)
-
-
-        } )
-        // debugger
+            scoreboardDiv.appendChild(newRow)
+        } )  
     })
-    // this needs to fetch and somehow sort.. will need to google some
 }
 
 function clearScoreboard() {
     let tbody = document.getElementById("scoreboard-body")
     tbody.innerHTML = ""
 }
+
+function toggleClearButton() {
+    let clearButton = document.getElementById("delete-game-button")
+    if (clearButton.style.display === "none") {
+        clearButton.style.display = "block"
+    } else {
+        clearButton.style.display = "none"
+    }
+
+    clearButton.addEventListener("click", dealWithDelete)
+}
+
+function dealWithDelete() {
+    if (confirm("Are you sure? This will delete all scores")) {
+        console.log("inside deal with delete")
+
+        fetch(BASEURL + "clear-board")
+        .then(resp => resp.json())
+        .then(json => {
+            fetchNewScores()
+        })
+    }
+}
+
+function doubleTheScore(id, num) {
+
+   console.log(num)
+   fetch(BASEURL + `games/${id}`, configDoubleObject(num))
+   .then(resp => resp.json())
+   .then(json => {
+       console.log(json)
+       
+       fetchNewScores()
+       
+   })
+}
+
+function configDoubleObject(num) {
+    return {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify({
+            score: num
+        })
+    } 
+}
+
+function showEditUserButton() {
+    let button = document.getElementById("edit-user-button")
+    button.style.display = "block"
+
+    button.addEventListener("click", goToEditPage)
+}
+
+function goToEditPage() {
+
+    toggleGameBox()
+    toggleLoginForm()
+    toggleEditButtons()
+    toggleEnterButton()
+
+}
+
+function toggleEditButtons() {
+    let editButtons = document.getElementById("form-edit-buttons")
+
+    let editButton = document.getElementById("username-edit-button")
+
+    let deleteButton = document.getElementById("delete-user-button")
+
+ 
+    if (editButtons.style.display === "none") {
+        editButtons.style.display = "block"
+    } else {
+        editButtons.style.display = "none" 
+    }
+
+    editButtons.addEventListener("click", event => {
+
+        event.preventDefault()
+        
+        if (event.target.id === "username-edit-button") {
+            let newName = event.target.parentNode.parentNode.children[1].value
+            
+            fetch(BASEURL + `users/${currentUser.id}`, configEditObject(newName))
+            .then(resp => resp.json())
+            .then(json => {
+                // debugger
+                currentUser = json
+                renderMainPage()
+            })
+            
+        } else if (event.target.id === "delete-user-button") {
+            console.log(event.target.id)
+
+        fetch(BASEURL + `users/${currentUser.id}`, {method: "DELETE"})
+        .then(resp => resp.json())
+        .then(json => {
+            console.log(json)
+            toggleEnterButton()
+            toggleEditButtons()
+            resetLoginForm()
+        })
+
+        } else {return}
+    })
+}
+
+function toggleEnterButton() {
+
+    let button = document.getElementById("login-enter")
+
+    if (button.style.display === "none") {
+        button.style.display = "block"
+    } else {
+        button.style.display = "none" 
+    }
+}
+
+function configEditObject(name) {
+    return {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify({
+            name: name
+        })
+    }
+}
+
+// .reset()
+
+function resetLoginForm() {
+    form = document.getElementById("login-form")
+    form.reset()
+}
+
+
+
 
 
 
